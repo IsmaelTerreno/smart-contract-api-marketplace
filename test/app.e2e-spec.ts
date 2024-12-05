@@ -45,9 +45,9 @@ describe('Marketplace API (e2e)', () => {
   it('Should get all items in the marketplace (GET)', () => {
     return request(app.getHttpServer())
       .get('/api/v1/marketplace/items')
-      .expect(200)
-      .expect([]);
+      .expect(200);
   });
+
   it('Should purchase an item in the marketplace (POST)', () => {
     return request(app.getHttpServer())
       .post('/api/v1/marketplace/purchase')

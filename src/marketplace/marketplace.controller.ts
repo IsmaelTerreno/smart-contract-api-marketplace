@@ -29,7 +29,7 @@ export class MarketplaceController {
       // Logic for getting all items
       return {
         message: 'All items',
-        data: await this.marketplaceService.getAllItems(),
+        data: (await this.marketplaceService.getAllItems()) || [],
       };
     } catch (error) {
       return {
