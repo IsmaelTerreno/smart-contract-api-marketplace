@@ -46,17 +46,34 @@ export class MarketplaceService {
     return listItemDto;
   }
 
-  getAllItems() {}
+  async getAllItems() {
+    this.logger.log('🔄 Getting all items');
+    this.logger.log('🛰 Querying all items from the marketplace');
+    try {
+      const marketplaceContract: Contract =
+        await this.blockchainService.getMarketplaceContract();
+      const items = await marketplaceContract.getListings();
+      this.logger.log('✅ Items queried successfully');
+      this.logger.log('📡 Items:' + items);
+      return items;
+    } catch (error) {
+      const message = '❌ Error getting all items: ' + error;
+      this.logger.error(message);
+      throw new Error(message);
+    }
+  }
 
   purchaseItem(purchaseItemDto: any) {}
 
   withdrawItem(withdrawItemDto: any) {}
 
   async approveSellerItem(amount: number) {
-    const userAddress = this.configService.get<string>('USER_ADDRESS_SELLER');
+    const userSellerAddress = this.configService.get<string>(
+      'USER_ADDRESS_SELLER',
+    );
     try {
       const contract = await this.blockchainService.getTokenItemContract();
-      return await contract.approve(userAddress, amount);
+      return await contract.approve(userSellerAddress, amount);
     } catch (error) {
       throw new Error(error);
     }

@@ -30,10 +30,10 @@ export class MarketplaceController {
     return this.marketplaceService.withdrawItem(withdrawItemDto);
   }
 
-  @Get('initial-load-token-list')
+  @Get('initial-load-token-to-seller')
   async initialLoadTokenList() {
     // Logic for initial loading of token list
-    return await this.marketplaceService.approveSellerItem(100);
+    return await this.marketplaceService.approveSellerItem(100000);
   }
 
   @Get()

@@ -47,4 +47,11 @@ describe('Marketplace API (e2e)', () => {
       })
       .expect(201);
   });
+
+  it('Should get all items in the marketplace (GET)', () => {
+    return request(app.getHttpServer())
+      .get('/api/v1/marketplace/items')
+      .expect(200)
+      .expect([]);
+  });
 });
