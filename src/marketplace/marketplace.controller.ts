@@ -9,14 +9,34 @@ export class MarketplaceController {
 
   @Post('list')
   async listItems(@Body() listItemDto: ListItemToMarketplaceDto) {
-    // Logic for listing items via signed messages
-    return this.marketplaceService.listItem(listItemDto);
+    try {
+      // Logic for listing an item
+      return {
+        message: 'Item listed successfully',
+        data: await this.marketplaceService.listItem(listItemDto),
+      };
+    } catch (error) {
+      return {
+        message: 'Error listing item',
+        error: error.message,
+      };
+    }
   }
 
   @Get('items')
-  getAllItems() {
-    // Logic for querying all items
-    return this.marketplaceService.getAllItems();
+  async getAllItems() {
+    try {
+      // Logic for getting all items
+      return {
+        message: 'All items',
+        data: await this.marketplaceService.getAllItems(),
+      };
+    } catch (error) {
+      return {
+        message: 'Error getting all items',
+        error: error.message,
+      };
+    }
   }
 
   @Post('purchase')
@@ -37,8 +57,18 @@ export class MarketplaceController {
 
   @Post('withdraw')
   async withdrawItem(@Body() withdrawItemDto: any) {
-    // Logic for withdrawing an item
-    return await this.marketplaceService.withdrawItem(withdrawItemDto);
+    try {
+      // Logic for withdrawing an item
+      return {
+        message: 'Item withdrawn successfully',
+        data: await this.marketplaceService.withdrawItem(withdrawItemDto),
+      };
+    } catch (error) {
+      return {
+        message: 'Error withdrawing item',
+        error: error.message,
+      };
+    }
   }
 
   @Get('general-info-config-marketplace')
