@@ -20,7 +20,7 @@ export class MarketplaceService {
 
   async listItem(listItemDto: ListItemToMarketplaceDto) {
     this.logger.log('🔄 Listing item:' + listItemDto);
-    await this.approveSellerItem(listItemDto.amount);
+    await this.approveSellerItemInMarketPlace(listItemDto.amount);
     await this.blockchainService.signMessage('Approve seller item');
     const dataJSON = JSON.stringify(listItemDto);
     try {
@@ -67,13 +67,19 @@ export class MarketplaceService {
 
   withdrawItem(withdrawItemDto: any) {}
 
-  async approveSellerItem(amount: number) {
-    const userSellerAddress = this.configService.get<string>(
-      'USER_ADDRESS_SELLER',
-    );
+  async approveSellerItemInMarketPlace(amount: number) {
     try {
-      const contract = await this.blockchainService.getTokenItemContract();
-      return await contract.approve(userSellerAddress, amount);
+      const contractItem = await this.blockchainService.getTokenItemContract();
+      const contractMarketplaceAddress = this.configService.get<string>(
+        'CONTRACT_ADDRESS_MARKETPLACE',
+      );
+      this.logger.log('🔄 Approving seller item');
+      const result = await contractItem.approve(
+        contractMarketplaceAddress,
+        amount,
+      );
+      this.logger.log('✅ Seller item approved for listing');
+      return result;
     } catch (error) {
       throw new Error(error);
     }

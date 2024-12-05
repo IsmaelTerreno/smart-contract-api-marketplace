@@ -33,7 +33,7 @@ export class MarketplaceController {
   @Get('initial-load-token-to-seller')
   async initialLoadTokenList() {
     // Logic for initial loading of token list
-    return await this.marketplaceService.approveSellerItem(100000);
+    return await this.marketplaceService.approveSellerItemInMarketPlace(100000);
   }
 
   @Get()
