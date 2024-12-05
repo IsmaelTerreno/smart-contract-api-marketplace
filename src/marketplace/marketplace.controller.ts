@@ -1,12 +1,13 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { MarketplaceService } from './marketplace.service';
+import { ListItemToMarketplaceDto } from './list-item-to-marketplace.dto';
 
 @Controller('/api/v1/marketplace')
 export class MarketplaceController {
   constructor(private readonly marketplaceService: MarketplaceService) {}
 
   @Post('list')
-  listItems(@Body() listItemDto: any) {
+  async listItems(@Body() listItemDto: ListItemToMarketplaceDto) {
     // Logic for listing items via signed messages
     return this.marketplaceService.listItem(listItemDto);
   }

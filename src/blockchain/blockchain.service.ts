@@ -13,7 +13,9 @@ export class BlockchainService {
 
   constructor(private configService: ConfigService) {
     const rpcUrl = this.configService.get<string>('RPC_URL');
-    const privateKey = this.configService.get<string>('USER_PRIVATE_KEY');
+    const privateKey = this.configService.get<string>(
+      'USER_PRIVATE_KEY_SELLER',
+    );
 
     if (!rpcUrl) {
       throw new Error('RPC_URL is not defined');
@@ -46,10 +48,10 @@ export class BlockchainService {
 
   async loadMarketplaceTokenItemContract() {
     const contractAddressTokenItem = this.configService.get<string>(
-      'CONTRACT_ADDRESS_TOKEN_ITEM',
+      'CONTRACT_ADDRESS_TOKEN_ITEM_SELLER',
     );
     if (!contractAddressTokenItem) {
-      throw new Error('CONTRACT_ADDRESS_TOKEN_ITEM is not defined');
+      throw new Error('CONTRACT_ADDRESS_TOKEN_ITEM_SELLER is not defined');
     }
     this.contractTokenItem = new ethers.Contract(
       contractAddressTokenItem,

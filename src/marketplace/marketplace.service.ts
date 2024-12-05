@@ -1,9 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { BlockchainService } from '../blockchain/blockchain.service';
 import { ConfigService } from '@nestjs/config';
+import { ListItemToMarketplaceDto } from './list-item-to-marketplace.dto';
+import { Contract } from 'ethers';
 
 @Injectable()
 export class MarketplaceService {
+  private readonly logger = new Logger(MarketplaceService.name);
   private blockchainService: BlockchainService;
   private configService: ConfigService;
 
@@ -15,7 +18,33 @@ export class MarketplaceService {
     this.configService = configService;
   }
 
-  listItem(listItemDto: any) {}
+  async listItem(listItemDto: ListItemToMarketplaceDto) {
+    this.logger.log('🔄 Listing item:' + listItemDto);
+    await this.approveSellerItem(listItemDto.amount);
+    await this.blockchainService.signMessage('Approve seller item');
+    const dataJSON = JSON.stringify(listItemDto);
+    try {
+      const marketplaceContract: Contract =
+        await this.blockchainService.getMarketplaceContract();
+      this.logger.log(
+        '🛰 Sending tokens to the marketplace with the following data:' +
+          dataJSON,
+      );
+      const tx = await marketplaceContract.listItem(
+        listItemDto.tokenAddress,
+        listItemDto.amount,
+        listItemDto.price,
+      );
+      const txJSON = JSON.stringify(tx);
+      this.logger.log('✅ Item listed successfully with tx:' + tx?.hash);
+      this.logger.log('📡 Transaction details:' + txJSON);
+    } catch (error) {
+      const message = '❌ Error listing item: ' + error;
+      this.logger.error(message);
+      throw new Error(message);
+    }
+    return listItemDto;
+  }
 
   getAllItems() {}
 
@@ -24,7 +53,7 @@ export class MarketplaceService {
   withdrawItem(withdrawItemDto: any) {}
 
   async approveSellerItem(amount: number) {
-    const userAddress = this.configService.get<string>('USER_ADDRESS');
+    const userAddress = this.configService.get<string>('USER_ADDRESS_SELLER');
     try {
       const contract = await this.blockchainService.getTokenItemContract();
       return await contract.approve(userAddress, amount);
