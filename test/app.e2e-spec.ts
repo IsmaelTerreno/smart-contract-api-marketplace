@@ -31,12 +31,6 @@ describe('Marketplace API (e2e)', () => {
       .expect('Welcome to the marketplace!');
   });
 
-  it('Should load tokens to the seller for the initial token list (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/api/v1/marketplace/initial-load-token-list')
-      .expect(200);
-  });
-
   it('Should list an item in the marketplace (POST)', () => {
     return request(app.getHttpServer())
       .post('/api/v1/marketplace/list')
@@ -53,5 +47,14 @@ describe('Marketplace API (e2e)', () => {
       .get('/api/v1/marketplace/items')
       .expect(200)
       .expect([]);
+  });
+  it('Should purchase an item in the marketplace (POST)', () => {
+    return request(app.getHttpServer())
+      .post('/api/v1/marketplace/purchase')
+      .send({
+        tokenId: 1,
+        amount: 1,
+      })
+      .expect(201);
   });
 });

@@ -81,28 +81,6 @@
 			"response": []
 		},
 		{
-			"name": "Load seller wallet with tokens for testing marketplace",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:6000/api/v1/marketplace/initial-load-token-to-seller",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "6000",
-					"path": [
-						"api",
-						"v1",
-						"marketplace",
-						"initial-load-token-to-seller"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "General info API for testing and Demo",
 			"request": {
 				"method": "GET",
