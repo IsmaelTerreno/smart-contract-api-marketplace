@@ -44,4 +44,9 @@ export class BlockchainService {
   async signMessage(message: string): Promise<string> {
     return this.signer.signMessage(message);
   }
+
+  async loadContractAbi(contractAddress: string): Promise<any> {
+    const contract = new ethers.Contract(contractAddress, [], this.provider);
+    return contract.interface.fragments;
+  }
 }

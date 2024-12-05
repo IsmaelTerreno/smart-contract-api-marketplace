@@ -28,4 +28,9 @@ export class MarketplaceController {
     // Logic for withdrawing an item
     return this.marketplaceService.withdrawItem(withdrawItemDto);
   }
+
+  @Get('/')
+  home(): string {
+    return 'Welcome to the marketplace!';
+  }
 }
