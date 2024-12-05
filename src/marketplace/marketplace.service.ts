@@ -97,7 +97,25 @@ export class MarketplaceService {
     return purchaseItemDto;
   }
 
-  async withdrawItem(withdrawItemDto: any) {}
+  async withdrawSellerEarnings() {
+    this.logger.log('🔄 Withdrawing seller earnings');
+    await this.blockchainService.signMessage('Withdraw seller earnings');
+    try {
+      const marketplaceContract: Contract =
+        await this.blockchainService.getMarketplaceContract();
+      this.logger.log('🛰 Withdrawing seller earnings from the marketplace');
+      const tx = await marketplaceContract.withdrawFunds();
+      const txJSON = JSON.stringify(tx);
+      this.logger.log(
+        '✅ Seller earnings withdrawn successfully with tx:' + tx?.hash,
+      );
+      this.logger.log('📡 Transaction details:' + txJSON);
+    } catch (error) {
+      const message = '❌ Error withdrawing seller earnings: ' + error;
+      this.logger.error(message);
+      throw new Error(message);
+    }
+  }
 
   async approveSellerItemInMarketPlace(amount: number) {
     try {

@@ -57,4 +57,10 @@ describe('Marketplace API (e2e)', () => {
       })
       .expect(201);
   });
+
+  it('Should withdraw seller earnings (POST)', () => {
+    return request(app.getHttpServer())
+      .post('/api/v1/marketplace/withdraw')
+      .expect(201);
+  });
 });

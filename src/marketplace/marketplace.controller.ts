@@ -56,16 +56,16 @@ export class MarketplaceController {
   }
 
   @Post('withdraw')
-  async withdrawItem(@Body() withdrawItemDto: any) {
+  async withdrawSellerEarnings() {
     try {
-      // Logic for withdrawing an item
+      // Logic for withdrawing seller earnings funds
       return {
-        message: 'Item withdrawn successfully',
-        data: await this.marketplaceService.withdrawItem(withdrawItemDto),
+        message: 'Withdrawn funds successfully',
+        data: await this.marketplaceService.withdrawSellerEarnings(),
       };
     } catch (error) {
       return {
-        message: 'Error withdrawing item',
+        message: 'Error withdrawing item, make sure you have funds to withdraw',
         error: error.message,
       };
     }
