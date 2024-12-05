@@ -29,9 +29,14 @@ export class MarketplaceController {
     return this.marketplaceService.withdrawItem(withdrawItemDto);
   }
 
+  @Get('initial-load-token-list')
+  async initialLoadTokenList() {
+    // Logic for initial loading of token list
+    return await this.marketplaceService.approveSellerItem(100);
+  }
+
   @Get()
   async home() {
-    await this.marketplaceService.approveSellerItem(100);
     return 'Welcome to the marketplace!';
   }
 }

@@ -16,10 +16,16 @@ describe('Marketplace API (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
+  it('Should show a welcome message (GET)', () => {
     return request(app.getHttpServer())
       .get('/api/v1/marketplace')
       .expect(200)
       .expect('Welcome to the marketplace!');
+  });
+
+  it('Should load the initial token list (GET)', () => {
+    return request(app.getHttpServer())
+      .get('/api/v1/marketplace/initial-load-token-list')
+      .expect(200);
   });
 });
