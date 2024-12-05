@@ -2,7 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { BlockchainService } from '../blockchain/blockchain.service';
 import { ConfigService } from '@nestjs/config';
 import { ListItemToMarketplaceDto } from './list-item-to-marketplace.dto';
-import { Contract } from 'ethers';
+import { Contract, ethers } from 'ethers';
+import { PurchaseItemMarketplaceDto } from './purchase-item-marketplace.dto';
 
 @Injectable()
 export class MarketplaceService {
@@ -63,7 +64,38 @@ export class MarketplaceService {
     }
   }
 
-  purchaseItem(purchaseItemDto: any) {}
+  async purchaseItem(purchaseItemDto: PurchaseItemMarketplaceDto) {
+    this.logger.log('🔄 Purchasing item:' + purchaseItemDto);
+    await this.blockchainService.signMessage('Purchase item');
+    const dataJSON = JSON.stringify(purchaseItemDto);
+    try {
+      const marketplaceContract: Contract =
+        await this.blockchainService.getMarketplaceContract();
+      this.logger.log(
+        '🛰 Purchasing item from the marketplace with the following data:' +
+          dataJSON,
+      );
+      const priceInWei = ethers.utils.parseEther(
+        purchaseItemDto.price.toString(),
+      );
+      const tx = await marketplaceContract.purchaseItem(
+        purchaseItemDto.listingId,
+        {
+          value: priceInWei,
+        },
+      );
+      const txJSON = JSON.stringify(tx);
+      this.logger.log('✅ Item purchased successfully with tx:' + tx?.hash);
+      this.logger.log('📡 Transaction details:' + txJSON);
+    } catch (error) {
+      const message =
+        '❌ Error purchasing item, please check the active items or check your balance in ETH: ' +
+        error;
+      this.logger.error(message);
+      throw new Error(message);
+    }
+    return purchaseItemDto;
+  }
 
   withdrawItem(withdrawItemDto: any) {}
 

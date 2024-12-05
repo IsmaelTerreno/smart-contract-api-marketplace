@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { MarketplaceService } from './marketplace.service';
 import { ListItemToMarketplaceDto } from './list-item-to-marketplace.dto';
+import { PurchaseItemMarketplaceDto } from './purchase-item-marketplace.dto';
 
 @Controller('/api/v1/marketplace')
 export class MarketplaceController {
@@ -19,7 +20,7 @@ export class MarketplaceController {
   }
 
   @Post('purchase')
-  purchaseItem(@Body() purchaseItemDto: any) {
+  purchaseItem(@Body() purchaseItemDto: PurchaseItemMarketplaceDto) {
     // Logic for purchasing an item
     return this.marketplaceService.purchaseItem(purchaseItemDto);
   }
