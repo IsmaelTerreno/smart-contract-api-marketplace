@@ -97,7 +97,7 @@ export class MarketplaceService {
     return purchaseItemDto;
   }
 
-  withdrawItem(withdrawItemDto: any) {}
+  async withdrawItem(withdrawItemDto: any) {}
 
   async approveSellerItemInMarketPlace(amount: number) {
     try {
