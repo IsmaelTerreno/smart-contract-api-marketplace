@@ -84,4 +84,35 @@ export class MarketplaceService {
       throw new Error(error);
     }
   }
+
+  async generalInfoConfigMarketplace() {
+    const marketplaceAddress = this.configService.get<string>(
+      'CONTRACT_ADDRESS_MARKETPLACE',
+    );
+    const tokenAddressForSeller = this.configService.get<string>(
+      'CONTRACT_ADDRESS_TOKEN_ITEM_SELLER',
+    );
+    const sellerAddress = this.configService.get<string>('USER_ADDRESS_SELLER');
+    const sellerPrivateKey = this.configService.get<string>(
+      'USER_PRIVATE_KEY_SELLER',
+    );
+    const buyerAddress = this.configService.get<string>('USER_ADDRESS_BUYER');
+    const buyerPrivateKey = this.configService.get<string>(
+      'USER_PRIVATE_KEY_BUYER',
+    );
+    return {
+      // Token address for the marketplace
+      marketplaceAddress:
+        marketplaceAddress || 'Please set the marketplace address',
+      // Token address for the seller to list in the marketplace
+      tokenAddressForSeller:
+        tokenAddressForSeller || 'Please set the token address for the seller',
+      // Seller wallet information
+      sellerAddress: sellerAddress || 'Please set the seller address',
+      sellerPrivateKey: sellerPrivateKey || 'Please set the seller private key',
+      // Buyer wallet information
+      buyerAddress: buyerAddress || 'Please set the buyer address',
+      buyerPrivateKey: buyerPrivateKey || 'Please set the buyer private key',
+    };
+  }
 }

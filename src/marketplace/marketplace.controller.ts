@@ -36,6 +36,12 @@ export class MarketplaceController {
     return await this.marketplaceService.approveSellerItemInMarketPlace(100000);
   }
 
+  @Get('general-info-config-marketplace')
+  async generalInfoConfigMarketplace() {
+    // Logic for general info configuration of the marketplace for demo and testing purposes, NOT FOR PRODUCTION
+    return await this.marketplaceService.generalInfoConfigMarketplace();
+  }
+
   @Get()
   async home() {
     return 'Welcome to the marketplace!';
