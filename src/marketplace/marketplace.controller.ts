@@ -29,8 +29,9 @@ export class MarketplaceController {
     return this.marketplaceService.withdrawItem(withdrawItemDto);
   }
 
-  @Get('/')
-  home(): string {
+  @Get()
+  async home() {
+    await this.marketplaceService.approveSellerItem(100);
     return 'Welcome to the marketplace!';
   }
 }

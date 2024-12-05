@@ -1,13 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { BlockchainService } from '../blockchain/blockchain.service';
-import { ContractInfoDto } from '../blockchain/contract-info.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class MarketplaceService {
-  blockchainService: BlockchainService;
+  private blockchainService: BlockchainService;
+  private configService: ConfigService;
 
-  constructor(blockchainService: BlockchainService) {
+  constructor(
+    blockchainService: BlockchainService,
+    configService: ConfigService,
+  ) {
     this.blockchainService = blockchainService;
+    this.configService = configService;
   }
 
   listItem(listItemDto: any) {}
@@ -18,12 +23,13 @@ export class MarketplaceService {
 
   withdrawItem(withdrawItemDto: any) {}
 
-  approveItem(approveItemDto: any, contractInfoDto: ContractInfoDto) {
-    this.blockchainService.interactWithContract(
-      contractInfoDto.address,
-      [],
-      'approve',
-      [approveItemDto.itemId, approveItemDto.approval],
-    );
+  async approveSellerItem(amount: number) {
+    const userAddress = this.configService.get<string>('USER_ADDRESS');
+    try {
+      const contract = await this.blockchainService.getTokenItemContract();
+      return await contract.approve(userAddress, amount);
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 }
