@@ -34,7 +34,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"tokenAddress\": \"0x5FbDB2315678afecb367f032d93F642f64180aa3\",\n    \"amount\": 6,\n    \"price\": 2\n}",
+					"raw": "{\n    \"tokenAddress\": \"0x5FbDB2315678afecb367f032d93F642f64180aa3\",\n    \"amount\": 9,\n    \"price\": 4\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -97,6 +97,37 @@
 						"v1",
 						"marketplace",
 						"general-info-config-marketplace"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Purchase and item",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"listingId\": 3,\n    \"amount\": 6,\n    \"price\": 2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:6000/api/v1/marketplace/purchase",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "6000",
+					"path": [
+						"api",
+						"v1",
+						"marketplace",
+						"purchase"
 					]
 				}
 			},
