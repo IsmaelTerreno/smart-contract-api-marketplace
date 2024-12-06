@@ -21,8 +21,8 @@ export class MarketplaceService {
 
   async listItem(listItemDto: ListItemToMarketplaceDto) {
     this.logger.log('🔄 Listing item:' + listItemDto);
+    const signatureSeller = await this.blockchainService.createSignature();
     await this.approveSellerItemInMarketPlace(listItemDto.amount);
-    await this.blockchainService.signMessage('Approve seller item');
     const dataJSON = JSON.stringify(listItemDto);
     try {
       const marketplaceContract: Contract =
@@ -35,6 +35,7 @@ export class MarketplaceService {
         listItemDto.tokenAddress,
         listItemDto.amount,
         ethers.utils.parseEther(listItemDto.price.toString()),
+        signatureSeller,
       );
       const txJSON = JSON.stringify(tx);
       this.logger.log('✅ Item listed successfully with tx:' + tx?.hash);

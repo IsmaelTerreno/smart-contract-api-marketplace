@@ -58,12 +58,25 @@ describe('Marketplace API (e2e)', () => {
     expect(result.body.data.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('Should purchase an item in the marketplace (POST)', () => {
-    return request(app.getHttpServer())
+  it('Should purchase an item in the marketplace (POST)', async () => {
+    await request(app.getHttpServer())
+      .post('/api/v1/marketplace/list')
+      .send({
+        tokenAddress: CONTRACT_ADDRESS_TOKEN_ITEM_SELLER,
+        amount: 1,
+        price: 1,
+      })
+      .expect(201);
+    const result = await request(app.getHttpServer()).get(
+      '/api/v1/marketplace/items',
+    );
+    const foundItem = result.body.data.find((item) => item.amount > 0);
+    return await request(app.getHttpServer())
       .post('/api/v1/marketplace/purchase')
       .send({
-        tokenId: 1,
-        amount: 1,
+        listingId: foundItem.listingId,
+        amount: foundItem.amount,
+        price: Number(foundItem.price),
       })
       .expect(201);
   });
