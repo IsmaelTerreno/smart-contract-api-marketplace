@@ -34,7 +34,7 @@ export class MarketplaceService {
       const tx = await marketplaceContract.listItem(
         listItemDto.tokenAddress,
         listItemDto.amount,
-        listItemDto.price,
+        ethers.utils.parseEther(listItemDto.price.toString()),
       );
       const txJSON = JSON.stringify(tx);
       this.logger.log('✅ Item listed successfully with tx:' + tx?.hash);
