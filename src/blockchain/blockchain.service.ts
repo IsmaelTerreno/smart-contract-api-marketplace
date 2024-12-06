@@ -81,4 +81,33 @@ export class BlockchainService {
   async getTokenItemContract() {
     return this.contractTokenItem;
   }
+
+  async createSignature() {
+    const contractMarketplaceAddress = this.configService.get<string>(
+      'CONTRACT_ADDRESS_MARKETPLACE',
+    );
+    const { chainId } = await this.provider.getNetwork();
+    // Sign the message that includes the seller's address
+    const message = {
+      types: {
+        Order: [{ name: 'participant', type: 'address' }],
+      },
+      domain: {
+        name: 'Marketplace',
+        version: '1',
+        verifyingContract: contractMarketplaceAddress,
+        chainId: chainId, // replace with your actual chain ID
+      },
+      primaryType: 'Order',
+      message: {
+        participant: await this.signer.getAddress(),
+      },
+    };
+
+    return await this.signer._signTypedData(
+      message.domain,
+      message.types,
+      message.message,
+    );
+  }
 }

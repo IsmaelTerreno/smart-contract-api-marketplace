@@ -68,8 +68,23 @@ describe('Marketplace API (e2e)', () => {
       .expect(201);
   });
 
-  it('Should withdraw seller earnings (POST)', () => {
-    return request(app.getHttpServer())
+  it('Should withdraw seller earnings (POST)', async () => {
+    await request(app.getHttpServer())
+      .post('/api/v1/marketplace/list')
+      .send({
+        tokenAddress: CONTRACT_ADDRESS_TOKEN_ITEM_SELLER,
+        amount: 4,
+        price: 3,
+      })
+      .expect(201);
+    request(app.getHttpServer())
+      .post('/api/v1/marketplace/purchase')
+      .send({
+        tokenId: 1,
+        amount: 1,
+      })
+      .expect(201);
+    return await request(app.getHttpServer())
       .post('/api/v1/marketplace/withdraw')
       .expect(201);
   });

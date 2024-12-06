@@ -54,9 +54,18 @@ export class MarketplaceService {
       const marketplaceContract: Contract =
         await this.blockchainService.getMarketplaceContract();
       const items = await marketplaceContract.getListings();
+      const listArray = items.map((item) => {
+        return {
+          listingId: item.id.toNumber(),
+          tokenAddress: item.token,
+          amount: item.amount.toNumber(),
+          price: ethers.utils.formatEther(item.price),
+          sellerAddress: item.seller,
+        };
+      });
       this.logger.log('✅ Items queried successfully');
-      this.logger.log('📡 Items:' + items);
-      return items;
+      this.logger.log('📡 Items:' + listArray);
+      return listArray;
     } catch (error) {
       const message = '❌ Error getting all items: ' + error;
       this.logger.error(message);
@@ -99,12 +108,12 @@ export class MarketplaceService {
 
   async withdrawSellerEarnings() {
     this.logger.log('🔄 Withdrawing seller earnings');
-    await this.blockchainService.signMessage('Withdraw seller earnings');
+    const signature = await this.blockchainService.createSignature();
     try {
       const marketplaceContract: Contract =
         await this.blockchainService.getMarketplaceContract();
       this.logger.log('🛰 Withdrawing seller earnings from the marketplace');
-      const tx = await marketplaceContract.withdrawFunds();
+      const tx = await marketplaceContract.withdrawFunds(signature);
       const txJSON = JSON.stringify(tx);
       this.logger.log(
         '✅ Seller earnings withdrawn successfully with tx:' + tx?.hash,
