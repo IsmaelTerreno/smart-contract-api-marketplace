@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Post,
+} from '@nestjs/common';
 import { MarketplaceService } from './marketplace.service';
 import { ListItemToMarketplaceDto } from './list-item-to-marketplace.dto';
 import { PurchaseItemMarketplaceDto } from './purchase-item-marketplace.dto';
@@ -16,10 +23,13 @@ export class MarketplaceController {
         data: await this.marketplaceService.listItem(listItemDto),
       };
     } catch (error) {
-      return {
-        message: 'Error listing item',
-        error: error.message,
-      };
+      throw new HttpException(
+        {
+          message: 'Error listing item',
+          error: error.message,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -32,10 +42,13 @@ export class MarketplaceController {
         data: (await this.marketplaceService.getAllItems()) || [],
       };
     } catch (error) {
-      return {
-        message: 'Error getting all items',
-        error: error.message,
-      };
+      throw new HttpException(
+        {
+          message: 'Error getting all items',
+          error: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -48,10 +61,13 @@ export class MarketplaceController {
         data: await this.marketplaceService.purchaseItem(purchaseItemDto),
       };
     } catch (error) {
-      return {
-        message: 'Error purchasing item',
-        error: error.message,
-      };
+      throw new HttpException(
+        {
+          message: 'Error purchasing item',
+          error: error.message,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -64,10 +80,14 @@ export class MarketplaceController {
         data: await this.marketplaceService.withdrawSellerEarnings(),
       };
     } catch (error) {
-      return {
-        message: 'Error withdrawing item, make sure you have funds to withdraw',
-        error: error.message,
-      };
+      throw new HttpException(
+        {
+          message:
+            'Error withdrawing item, make sure you have funds to withdraw.',
+          error: error.message,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -80,10 +100,14 @@ export class MarketplaceController {
         data: await this.marketplaceService.generalInfoConfigMarketplace(),
       };
     } catch (error) {
-      return {
-        message: 'Error getting general info configuration of the marketplace',
-        error: error.message,
-      };
+      throw new HttpException(
+        {
+          message:
+            'Error getting general info configuration of the marketplace',
+          error: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
