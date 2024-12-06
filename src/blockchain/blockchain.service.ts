@@ -7,13 +7,14 @@ import marketplaceABI from '../../contracts/Marketplace.sol/Marketplace.json';
 @Injectable()
 export class BlockchainService {
   readonly provider: ethers.providers.JsonRpcProvider;
-  readonly signer: ethers.Wallet;
+  readonly signerSeller: ethers.Wallet;
+  readonly signerBuyer: ethers.Wallet;
   private contractMarketplace: Contract;
   private contractTokenItem: Contract;
 
   constructor(private configService: ConfigService) {
     const rpcUrl = this.configService.get<string>('RPC_URL');
-    const privateKey = this.configService.get<string>(
+    const privateKeySeller = this.configService.get<string>(
       'USER_PRIVATE_KEY_SELLER',
     );
 
@@ -21,46 +22,27 @@ export class BlockchainService {
       throw new Error('RPC_URL is not defined');
     }
 
-    if (!privateKey) {
-      throw new Error('PRIVATE_KEY is not defined');
+    if (!privateKeySeller) {
+      throw new Error('USER_PRIVATE_KEY_SELLER is not defined');
     }
-
+    const privateKeyBuyer = this.configService.get<string>(
+      'USER_PRIVATE_KEY_BUYER',
+    );
+    if (!privateKeyBuyer) {
+      throw new Error('USER_PRIVATE_KEY_BUYER is not defined');
+    }
     this.provider = new ethers.providers.JsonRpcProvider(rpcUrl);
 
     try {
-      this.signer = new ethers.Wallet(privateKey, this.provider);
+      this.signerSeller = new ethers.Wallet(privateKeySeller, this.provider);
+      this.signerBuyer = new ethers.Wallet(privateKeyBuyer, this.provider);
     } catch (error) {
       // Log the error details
       throw new Error(`Failed to create wallet: ${error.message}`);
     }
-    (async () => {
-      // Load the Marketplace contract ABI and address
-      await this.loadMarketplaceContract();
-      // Load the Marketplace Item contract ABI and address
-      await this.loadMarketplaceTokenItemContract();
-    })();
   }
 
-  // Function to sign a message
-  async signMessage(message: string): Promise<string> {
-    return this.signer.signMessage(message);
-  }
-
-  async loadMarketplaceTokenItemContract() {
-    const contractAddressTokenItem = this.configService.get<string>(
-      'CONTRACT_ADDRESS_TOKEN_ITEM_SELLER',
-    );
-    if (!contractAddressTokenItem) {
-      throw new Error('CONTRACT_ADDRESS_TOKEN_ITEM_SELLER is not defined');
-    }
-    this.contractTokenItem = new ethers.Contract(
-      contractAddressTokenItem,
-      tokenItemABI.abi,
-      this.signer,
-    );
-  }
-
-  async loadMarketplaceContract() {
+  async getMarketplaceContract(signer: ethers.Wallet) {
     const contractAddressMarketplace = this.configService.get<string>(
       'CONTRACT_ADDRESS_MARKETPLACE',
     );
@@ -70,22 +52,31 @@ export class BlockchainService {
     this.contractMarketplace = new ethers.Contract(
       contractAddressMarketplace,
       marketplaceABI.abi,
-      this.signer,
+      signer,
     );
-  }
-
-  async getMarketplaceContract() {
     return this.contractMarketplace;
   }
 
-  async getTokenItemContract() {
+  async getTokenItemContract(signer: ethers.Wallet) {
+    const contractAddressTokenItem = this.configService.get<string>(
+      'CONTRACT_ADDRESS_TOKEN_ITEM_SELLER',
+    );
+    if (!contractAddressTokenItem) {
+      throw new Error('CONTRACT_ADDRESS_TOKEN_ITEM_SELLER is not defined');
+    }
+    this.contractTokenItem = new ethers.Contract(
+      contractAddressTokenItem,
+      tokenItemABI.abi,
+      signer,
+    );
     return this.contractTokenItem;
   }
 
-  async createSignature() {
+  async createSignature(signer: ethers.Wallet) {
     const contractMarketplaceAddress = this.configService.get<string>(
       'CONTRACT_ADDRESS_MARKETPLACE',
     );
+    const participantAddress = await signer.getAddress();
     const { chainId } = await this.provider.getNetwork();
     // Sign the message that includes the seller's address
     const message = {
@@ -100,11 +91,11 @@ export class BlockchainService {
       },
       primaryType: 'Order',
       message: {
-        participant: await this.signer.getAddress(),
+        participant: participantAddress,
       },
     };
 
-    return await this.signer._signTypedData(
+    return await signer._signTypedData(
       message.domain,
       message.types,
       message.message,

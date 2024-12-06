@@ -21,12 +21,16 @@ export class MarketplaceService {
 
   async listItem(listItemDto: ListItemToMarketplaceDto) {
     this.logger.log('🔄 Listing item:' + listItemDto);
-    const signatureSeller = await this.blockchainService.createSignature();
+    const signatureSeller = await this.blockchainService.createSignature(
+      this.blockchainService.signerSeller,
+    );
     await this.approveSellerItemInMarketPlace(listItemDto.amount);
     const dataJSON = JSON.stringify(listItemDto);
     try {
       const marketplaceContract: Contract =
-        await this.blockchainService.getMarketplaceContract();
+        await this.blockchainService.getMarketplaceContract(
+          this.blockchainService.signerSeller,
+        );
       this.logger.log(
         '🛰 Sending tokens to the marketplace with the following data:' +
           dataJSON,
@@ -53,7 +57,9 @@ export class MarketplaceService {
     this.logger.log('🛰 Querying all items from the marketplace');
     try {
       const marketplaceContract: Contract =
-        await this.blockchainService.getMarketplaceContract();
+        await this.blockchainService.getMarketplaceContract(
+          this.blockchainService.signerBuyer,
+        );
       const items = await marketplaceContract.getListings();
       const listArray = items.map((item) => {
         return {
@@ -76,11 +82,15 @@ export class MarketplaceService {
 
   async purchaseItem(purchaseItemDto: PurchaseItemMarketplaceDto) {
     this.logger.log('🔄 Purchasing item:' + purchaseItemDto);
-    const signature = await this.blockchainService.createSignature();
+    const signatureBuyer = await this.blockchainService.createSignature(
+      this.blockchainService.signerBuyer,
+    );
     const dataJSON = JSON.stringify(purchaseItemDto);
     try {
       const marketplaceContract: Contract =
-        await this.blockchainService.getMarketplaceContract();
+        await this.blockchainService.getMarketplaceContract(
+          this.blockchainService.signerBuyer,
+        );
       this.logger.log(
         '🛰 Purchasing item from the marketplace with the following data:' +
           dataJSON,
@@ -90,7 +100,7 @@ export class MarketplaceService {
       );
       const tx = await marketplaceContract.purchaseItem(
         purchaseItemDto.listingId,
-        signature,
+        signatureBuyer,
         {
           value: priceInWei,
         },
@@ -110,12 +120,16 @@ export class MarketplaceService {
 
   async withdrawSellerEarnings() {
     this.logger.log('🔄 Withdrawing seller earnings');
-    const signature = await this.blockchainService.createSignature();
+    const signatureSeller = await this.blockchainService.createSignature(
+      this.blockchainService.signerSeller,
+    );
     try {
       const marketplaceContract: Contract =
-        await this.blockchainService.getMarketplaceContract();
+        await this.blockchainService.getMarketplaceContract(
+          this.blockchainService.signerSeller,
+        );
       this.logger.log('🛰 Withdrawing seller earnings from the marketplace');
-      const tx = await marketplaceContract.withdrawFunds(signature);
+      const tx = await marketplaceContract.withdrawFunds(signatureSeller);
       const txJSON = JSON.stringify(tx);
       this.logger.log(
         '✅ Seller earnings withdrawn successfully with tx:' + tx?.hash,
@@ -130,7 +144,9 @@ export class MarketplaceService {
 
   async approveSellerItemInMarketPlace(amount: number) {
     try {
-      const contractItem = await this.blockchainService.getTokenItemContract();
+      const contractItem = await this.blockchainService.getTokenItemContract(
+        this.blockchainService.signerSeller,
+      );
       const contractMarketplaceAddress = this.configService.get<string>(
         'CONTRACT_ADDRESS_MARKETPLACE',
       );
