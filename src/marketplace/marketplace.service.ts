@@ -64,7 +64,7 @@ export class MarketplaceService {
         };
       });
       this.logger.log('✅ Items queried successfully');
-      this.logger.log('📡 Items:' + listArray);
+      this.logger.log('📡 Items:' + JSON.stringify(listArray));
       return listArray;
     } catch (error) {
       const message = '❌ Error getting all items: ' + error;
