@@ -1,4 +1,4 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsPositive, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class PurchaseItemMarketplaceDto {
@@ -9,6 +9,7 @@ export class PurchaseItemMarketplaceDto {
   listingId: string;
 
   @IsNumber()
+  @IsPositive()
   @ApiProperty({
     description: 'The amount of tokens to be listed in the marketplace',
   })

@@ -75,7 +75,7 @@ export class MarketplaceService {
 
   async purchaseItem(purchaseItemDto: PurchaseItemMarketplaceDto) {
     this.logger.log('🔄 Purchasing item:' + purchaseItemDto);
-    await this.blockchainService.signMessage('Purchase item');
+    const signature = await this.blockchainService.createSignature();
     const dataJSON = JSON.stringify(purchaseItemDto);
     try {
       const marketplaceContract: Contract =
@@ -89,6 +89,7 @@ export class MarketplaceService {
       );
       const tx = await marketplaceContract.purchaseItem(
         purchaseItemDto.listingId,
+        signature,
         {
           value: priceInWei,
         },
