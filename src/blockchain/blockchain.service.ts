@@ -6,8 +6,8 @@ import marketplaceABI from '../../contracts/Marketplace.sol/Marketplace.json';
 
 @Injectable()
 export class BlockchainService {
-  private readonly provider: ethers.providers.JsonRpcProvider;
-  private readonly signer: ethers.Wallet;
+  readonly provider: ethers.providers.JsonRpcProvider;
+  readonly signer: ethers.Wallet;
   private contractMarketplace: Contract;
   private contractTokenItem: Contract;
 
